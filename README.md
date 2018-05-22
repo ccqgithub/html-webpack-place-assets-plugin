@@ -4,7 +4,8 @@
 
 ## 依赖
 
-- [webpack@2.x](https://webpack.js.org/)
+- html-webpack-place-assets-plugin@2.x => [webpack@2.x, webpack@3.x](https://webpack.js.org/)
+- html-webpack-place-assets-plugin@3.x => [webpack@4.x](https://webpack.js.org/)
 - [html-webpack-plugin@2.x](https://github.com/jantimon/html-webpack-plugin)
 
 ## 配置

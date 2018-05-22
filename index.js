@@ -1,40 +1,36 @@
-// HtmlWebpackPlaceAssetsPlugin for html-webpack-plugin
+module.exports = class HtmlWebpackPlaceAssetsPlugin {
+  constructor(options) {
+    this.options = options;
+  }
 
-function HtmlWebpackPlaceAssetsPlugin(options) {
-  this.options = options;
-}
+  apply (compiler) {
+    const self = this;
 
-HtmlWebpackPlaceAssetsPlugin.prototype.apply = function(compiler) {
-  var self = this;
+    compiler.hooks.compilation.tap('HtmlWebpackPluginHooks', compilation => {
+      compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapPromise(
+        'htmlWebpackPluginBeforeHtmlProcessing',
+        (pluginArgs) => {
+          const headRegExp = self.options.headReplaceExp;
+          const bodyRegExp = self.options.bodyReplaceExp;
+          const tagsJoin = self.options.tagsJoin || '\n';
+          const assetTags = pluginArgs.plugin.generateHtmlTags(pluginArgs.assets);
+          const body = assetTags.body.map(pluginArgs.plugin.createHtmlTag);
+          const head = assetTags.head.map(pluginArgs.plugin.createHtmlTag);
+          let html = pluginArgs.html;
 
-  // Hook into the html-webpack-plugin processing
-  compiler.plugin('compilation', function (compilation) {
-    compilation.plugin('html-webpack-plugin-before-html-processing', function (pluginArgs, callback) {
-      var headRegExp = self.options.headReplaceExp;
-      var bodyRegExp = self.options.bodyReplaceExp;
-      var tagsJoin = self.options.tagsJoin || '\n';
-      var assetTags = pluginArgs.plugin.generateAssetTags(pluginArgs.assets);
-      var body = assetTags.body.map(pluginArgs.plugin.createHtmlTag);
-      var head = assetTags.head.map(pluginArgs.plugin.createHtmlTag);
-      var html = pluginArgs.html;
+          html = html.replace(bodyRegExp, function (match) {
+            return body.join(tagsJoin);
+          });
 
-      if (body.length) {
-        html = html.replace(bodyRegExp, function (match) {
-          return body.join(tagsJoin);
-        });
-      }
+          html = html.replace(headRegExp, function (match) {
+            return head.join(tagsJoin);
+          });
 
-      if (head.length) {
-        html = html.replace(headRegExp, function (match) {
-          return head.join(tagsJoin);
-        });
-      }
+          pluginArgs.html = html;
 
-      pluginArgs.html = html;
-
-      callback(null, pluginArgs);
+          return Promise.resolve(pluginArgs);
+        }
+      );
     });
-  });
+  }
 }
-
-module.exports = HtmlWebpackPlaceAssetsPlugin;
