@@ -47,9 +47,15 @@ module.exports = class HtmlWebpackPlaceAssetsPlugin {
           const headRegExp = self.options.headReplaceExp;
           const bodyRegExp = self.options.bodyReplaceExp;
           const tagsJoin = self.options.tagsJoin || '\n';
-          const assetTags = pluginArgs.plugin.generateHtmlTags(pluginArgs.assets);
-          const body = assetTags.body.map(pluginArgs.plugin.createHtmlTag);
-          const head = assetTags.head.map(pluginArgs.plugin.createHtmlTag);
+          const assetTags = pluginArgs.plugin.generateHtmlTags
+            .bind(pluginArgs.plugin)(pluginArgs.assets);
+          const body = assetTags.body.map(
+            pluginArgs.plugin.createHtmlTag.bind(pluginArgs.plugin.createHtmlTag)
+          );
+          const head = assetTags.head.map(
+            pluginArgs.plugin.createHtmlTag.bind(pluginArgs.plugin)
+          );
+          
           let html = pluginArgs.html;
 
           html = html.replace(bodyRegExp, function (match) {
