@@ -11,8 +11,5 @@
     "type": "git",
     "url": "https://github.com/ccqgithub/html-webpack-place-assets-plugin.git"
   },
-  "license": "ISC",
-  "dependencies": {
-    "toposort": "^2.0.2"
-  }
+  "license": "ISC"
 }
